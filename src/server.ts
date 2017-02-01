@@ -88,6 +88,10 @@ function getJsonFile(fname) {
 	});
 }
 
+function markChanged(fname) {
+	changed[fname] = true;
+}
+
 setInterval(_ => {
 	for (let fname of Object.keys(changed))
 		fs.writeFile(DATA_DIR + fname + '.json',
@@ -131,24 +135,51 @@ function handlePost(req: Request, res: Response) {
 			req.body._id = uniqueId(16);
 		json.push(req.body);
 		res.json({ msg: 'ok' });
-		changed[fname] = true;
+		markChanged(fname);
 	})
 	.catch(err => handleError(err, res));
 }
 
 function handlePut(req: Request, res: Response) {
 	let id = req.params.id;
-	getJsonFile(req.params.file)
+	let fname = req.params.file;
+	getJsonFile(fname)
 	.then(json => {
-		console.log(`PUT for file "${req.params.file}", id "${id}"`);
-		res.json(json);
+		console.log(`PUT for file "${fname}", id "${id}"`);
+		let idx = json.findIndex(item => item._id == id);
+		if (idx >= 0) {
+			if (!req.body._id)
+				req.body._id = id;
+			json[idx] = req.body;
+			markChanged(fname);
+			res.json({ msg: 'ok' });
+		}
+		else {
+			res.status(404);
+			res.json({ error: `Item ${id} not found in ${fname}` });
+		}
 	})
 	.catch(err => handleError(err, res));
 }
 
 function handleDelete(req: Request, res: Response) {
-	console.log(`DELETE for file "${req.params.file}", id "${req.params.id}"`);
-	res.send('OK');
+	let id = req.params.id;
+	let fname = req.params.file;
+	getJsonFile(fname)
+	.then(json => {
+		console.log(`DELETE for file "${fname}", id "${id}"`);
+		let idx = json.findIndex(item => item._id == id);
+		if (idx >= 0) {
+			json.splice(idx, 1);
+			markChanged(fname);
+			res.json({ msg: 'ok' });
+		}
+		else {
+			res.status(404);
+			res.json({ error: `Item ${id} not found in ${fname}` });
+		}
+	})
+	.catch(err => handleError(err, res));
 }
 
 
@@ -157,11 +188,12 @@ function handleDelete(req: Request, res: Response) {
 function main() {
 	let app = createExpressApp();
 	let route = API_ROOT + '/:file';
+	let routeWithId = route + '/:id';
 	app.get(route, handleGetAll);
-	app.get(route + '/:id', handleGetOne);
+	app.get(routeWithId, handleGetOne);
 	app.post(route, handlePost);
-	app.put(route + '/:id', handlePut);
-	app.delete(route + ':id', handleDelete);
+	app.put(routeWithId, handlePut);
+	app.delete(routeWithId, handleDelete);
 	http.createServer(app).listen(PORT);
 	console.log('API server ready on port ' + PORT);
 }
