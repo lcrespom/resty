@@ -1,0 +1,34 @@
+{
+  "name": "resty",
+  "version": "1.0.0",
+  "description": "Zero-config file-based REST API database",
+  "keywords": [
+    "REST",
+    "Database"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lcrespom/resty.git"
+  },
+  "author": "Luis Crespo",
+  "license": "ISC",
+  "bin": {
+    "resty": "bin/resty"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node bin/resty",
+    "test": "node tests | faucet"
+  },
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "compression": "^1.6.2",
+    "express": "^4.14.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.0.35",
+    "@types/node": "^7.0.4",
+    "tslint": "^4.4.2",
+    "typescript": "^2.1.5"
+  }
+}
