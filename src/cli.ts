@@ -13,7 +13,8 @@ export function getConfig() {
 		dataDir: argv.data || DATA_DIR,
 		apiRoot: argv.prefix || API_ROOT,
 		replyDelay: argv.delay || REPLY_DELAY,
-		writeDelay: argv['write-time'] || WRITE_DELAY
+		writeDelay: argv['write-time'] || WRITE_DELAY,
+		cors: !argv['disable-cors']
 	};
 	if (!config.apiRoot.startsWith('/'))
 		config.apiRoot = '/' + config.apiRoot;
@@ -31,5 +32,6 @@ Starting REST server:
   - API root (--prefix): ${cfg.apiRoot}
   - Reply delay (--delay): ${cfg.replyDelay} ms
   - Time between file writes (--write-time): ${cfg.writeDelay ? cfg.writeDelay + ' ms' : 'disabled'}
+  - CORS (--disable-cors): ${cfg.cors ? 'enabled' : 'disabled'}
 `);
 }

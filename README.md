@@ -17,3 +17,4 @@ Start the server with `npm start` and send HTTP requests to it. Data is stored i
 - `--prefix`: API prefix. Defaults to /api.
 - `--delay`: response delay in milliseconds. Defaults to 0.
 - `--write-time`: interval between file updates in milliseconds. Defaults to 1000. If set to 0, data will not be written to file.
+- `--disable-cors`: enable/disable cors. It is enabled by default.

@@ -4,6 +4,7 @@ const express = require('express');
 import { Request, Response, Application } from 'express';
 const compression = require('compression');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 import { getConfig } from './cli';
 
 
@@ -15,6 +16,7 @@ function createExpressApp(): Application {
 	let app = express();
 	setupCompression(app);
 	setupJSON(app);
+	if (config.cors) setupCORS(app);
 	return app;
 }
 
@@ -28,7 +30,10 @@ function setupJSON(app: Application) {
 	// this will let us get the data from a POST
 	app.use(bodyParser.urlencoded({ extended: true }));
 	app.use(bodyParser.json());
-	return app;
+}
+
+function setupCORS(app: Application) {
+	app.use(cors());
 }
 
 
