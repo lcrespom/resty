@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const express = require('express');
-import { Request, Response } from 'express';
+import { Request, Response, Application } from 'express';
 const compression = require('compression');
 const bodyParser = require('body-parser');
 
@@ -13,19 +13,19 @@ const WRITE_DELAY = 1000;
 
 // -------------------- App setup --------------------
 
-function createExpressApp() {
+function createExpressApp(): Application {
 	let app = express();
 	setupCompression(app);
 	setupJSON(app);
 	return app;
 }
 
-function setupCompression(app) {
+function setupCompression(app: Application) {
 	// Enable gzip compression
 	app.use(compression());
 }
 
-function setupJSON(app) {
+function setupJSON(app: Application) {
 	// Configure app to use bodyParser()
 	// this will let us get the data from a POST
 	app.use(bodyParser.urlencoded({ extended: true }));
@@ -116,14 +116,27 @@ function handleGetAll(req: Request, res: Response) {
 	getJsonFile(req.params.file)
 	.then(json => {
 		console.log(`GET for file ${req.params.file}`);
-		res.json(json);
+		res.json({ msg: 'OK', data: json });
 	})
 	.catch(err => handleError(err, res));
 }
 
 function handleGetOne(req: Request, res: Response) {
-	console.log(`GET for file "${req.params.file}.json", id "${req.params.id}"`);
-	res.send('OK');
+	let id = req.params.id;
+	let fname = req.params.file;
+	getJsonFile(fname)
+	.then(json => {
+		console.log(`GET for file "${fname}", id "${id}"`);
+		let item = json.find(item => item._id == id);
+		if (item) {
+			res.json({ msg: 'OK', data: item });
+		}
+		else {
+			res.status(404);
+			res.json({ error: `Item ${id} not found in ${fname}` });
+		}
+	})
+	.catch(err => handleError(err, res));
 }
 
 function handlePost(req: Request, res: Response) {
@@ -134,7 +147,7 @@ function handlePost(req: Request, res: Response) {
 		if (!req.body._id)
 			req.body._id = uniqueId(16);
 		json.push(req.body);
-		res.json({ msg: 'ok' });
+		res.json({ msg: 'OK' });
 		markChanged(fname);
 	})
 	.catch(err => handleError(err, res));
@@ -152,7 +165,7 @@ function handlePut(req: Request, res: Response) {
 				req.body._id = id;
 			json[idx] = req.body;
 			markChanged(fname);
-			res.json({ msg: 'ok' });
+			res.json({ msg: 'OK' });
 		}
 		else {
 			res.status(404);
@@ -172,7 +185,7 @@ function handleDelete(req: Request, res: Response) {
 		if (idx >= 0) {
 			json.splice(idx, 1);
 			markChanged(fname);
-			res.json({ msg: 'ok' });
+			res.json({ msg: 'OK' });
 		}
 		else {
 			res.status(404);

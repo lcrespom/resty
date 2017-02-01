@@ -19,5 +19,4 @@ Start the server with `npm start` and send HTTP requests to it. Data is stored i
 - `--write-time`: interval between file updates in milliseconds. Defaults to 1000.
 
 ## ToDo
-- All HTTP verbs
 - Parse and use command-line parameters
