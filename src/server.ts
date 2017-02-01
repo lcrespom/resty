@@ -43,9 +43,10 @@ let changed = {};
 function handleFileRead(fname, success, fail, err, data) {
 	let json: any = null;
 	let cberr: any = null;
-	// Assume all file read errors mean "file does not exist yet"
 	if (err) {
+		// Assume all file read errors mean "file does not exist yet" and create array
 		json = [];
+		files[fname] = json;
 		success(json);
 	}
 	else {
@@ -89,12 +90,23 @@ function getJsonFile(fname) {
 
 setInterval(_ => {
 	for (let fname of Object.keys(changed))
-		fs.writeFile(DATA_DIR + fname + '.json', files[fname]);
+		fs.writeFile(DATA_DIR + fname + '.json',
+			JSON.stringify(files[fname], null, 2));
 	changed = {};
 }, WRITE_DELAY);
 
 
 // -------------------- Request handlng --------------------
+
+function uniqueId(len) {
+	return Math.random().toString(36).substr(2, len);
+}
+
+function handleError(err, res) {
+	console.log('Error:', err.msg);
+	res.status(err.code);
+	res.json({ error: err });
+}
 
 function handleGetAll(req: Request, res: Response) {
 	getJsonFile(req.params.file)
@@ -102,38 +114,39 @@ function handleGetAll(req: Request, res: Response) {
 		console.log(`GET for file ${req.params.file}`);
 		res.json(json);
 	})
-	.catch(err => {
-		console.log('Error:', err.msg);
-		res.status(err.code);
-		res.json({ error: err });
-	});
+	.catch(err => handleError(err, res));
 }
 
-function handleGetOne(req, res) {
+function handleGetOne(req: Request, res: Response) {
 	console.log(`GET for file "${req.params.file}.json", id "${req.params.id}"`);
 	res.send('OK');
 }
 
 function handlePost(req: Request, res: Response) {
-	getJsonFile(req.params.file)
+	let fname = req.params.file;
+	getJsonFile(fname)
 	.then(json => {
-		console.log(`POST for file ${req.params.file}`);
+		console.log(`POST for file ${fname}`);
+		if (!req.body._id)
+			req.body._id = uniqueId(16);
 		json.push(req.body);
 		res.json({ msg: 'ok' });
+		changed[fname] = true;
 	})
-	.catch(err => {
-		console.log('Error:', err.msg);
-		res.status(err.code);
-		res.json({ error: err });
-	});
+	.catch(err => handleError(err, res));
 }
 
-function handlePut(req, res) {
-	console.log(`PUT for file "${req.params.file}", id "${req.params.id}"`);
-	res.send('OK');
+function handlePut(req: Request, res: Response) {
+	let id = req.params.id;
+	getJsonFile(req.params.file)
+	.then(json => {
+		console.log(`PUT for file "${req.params.file}", id "${id}"`);
+		res.json(json);
+	})
+	.catch(err => handleError(err, res));
 }
 
-function handleDelete(req, res) {
+function handleDelete(req: Request, res: Response) {
 	console.log(`DELETE for file "${req.params.file}", id "${req.params.id}"`);
 	res.send('OK');
 }

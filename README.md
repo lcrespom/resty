@@ -11,7 +11,7 @@ Start the server with `npm start` and send HTTP requests to it. Data is stored i
 - `DELETE /api/route/id`: Removes the element identified by `id`.
 - `GET /api/route/id`: Returns a single element identified by `id`.
 
-## Parameters
+## Command-line parameters
 - `--port`: HTTP port to be used.
 - `--data`: directory used to store JSON files. Defaults to working directory.
 - `--prefix`: API prefix. Defaults to /api.
@@ -20,4 +20,4 @@ Start the server with `npm start` and send HTTP requests to it. Data is stored i
 
 ## ToDo
 - All HTTP verbs
-- Parse and use command-line Parameters
+- Parse and use command-line parameters
