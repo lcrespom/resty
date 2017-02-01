@@ -23,7 +23,8 @@
   "dependencies": {
     "body-parser": "^1.16.0",
     "compression": "^1.6.2",
-    "express": "^4.14.1"
+    "express": "^4.14.1",
+    "yargs": "^6.6.0"
   },
   "devDependencies": {
     "@types/express": "^4.0.35",

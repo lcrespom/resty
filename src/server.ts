@@ -4,14 +4,12 @@ const express = require('express');
 import { Request, Response, Application } from 'express';
 const compression = require('compression');
 const bodyParser = require('body-parser');
-
-const API_ROOT = '/api';
-const PORT = 3000;
-const DATA_DIR = './';
-const WRITE_DELAY = 1000;
+import { getConfig } from './cli';
 
 
 // -------------------- App setup --------------------
+
+const config = getConfig();
 
 function createExpressApp(): Application {
 	let app = express();
@@ -82,7 +80,7 @@ function getJsonFile(fname) {
 			);
 		// Read the file
 		reading[fname] = [];
-		fs.readFile(DATA_DIR + fname + '.json', 'utf8', (err, data) => {
+		fs.readFile(config.dataDir + fname + '.json', 'utf8', (err, data) => {
 			handleFileRead(fname, success, fail, err, data);
 		});
 	});
@@ -92,12 +90,15 @@ function markChanged(fname) {
 	changed[fname] = true;
 }
 
-setInterval(_ => {
-	for (let fname of Object.keys(changed))
-		fs.writeFile(DATA_DIR + fname + '.json',
-			JSON.stringify(files[fname], null, 2));
-	changed = {};
-}, WRITE_DELAY);
+function setupPeriodicWrite() {
+	if (!config.writeDelay) return;
+	setInterval(_ => {
+		for (let fname of Object.keys(changed))
+			fs.writeFile(config.dataDir + fname + '.json',
+				JSON.stringify(files[fname], null, 2));
+		changed = {};
+	}, config.writeDelay);
+}
 
 
 // -------------------- Request handlng --------------------
@@ -106,17 +107,25 @@ function uniqueId(len) {
 	return Math.random().toString(36).substr(2, len);
 }
 
+function reply(res: Response, obj: any) {
+	const sendReply = () => res.json(obj);
+	if (config.replyDelay)
+		setTimeout(sendReply, config.replyDelay);
+	else
+		sendReply();
+}
+
 function handleError(err, res) {
 	console.log('Error:', err.msg);
 	res.status(err.code);
-	res.json({ error: err });
+	reply(res, { error: err });
 }
 
 function handleGetAll(req: Request, res: Response) {
 	getJsonFile(req.params.file)
 	.then(json => {
 		console.log(`GET for file ${req.params.file}`);
-		res.json({ msg: 'OK', data: json });
+		reply(res, { msg: 'OK', data: json });
 	})
 	.catch(err => handleError(err, res));
 }
@@ -129,11 +138,11 @@ function handleGetOne(req: Request, res: Response) {
 		console.log(`GET for file "${fname}", id "${id}"`);
 		let item = json.find(item => item._id == id);
 		if (item) {
-			res.json({ msg: 'OK', data: item });
+			reply(res, { msg: 'OK', data: item });
 		}
 		else {
 			res.status(404);
-			res.json({ error: `Item ${id} not found in ${fname}` });
+			reply(res, { error: `Item ${id} not found in ${fname}` });
 		}
 	})
 	.catch(err => handleError(err, res));
@@ -147,7 +156,7 @@ function handlePost(req: Request, res: Response) {
 		if (!req.body._id)
 			req.body._id = uniqueId(16);
 		json.push(req.body);
-		res.json({ msg: 'OK' });
+		reply(res, { msg: 'OK' });
 		markChanged(fname);
 	})
 	.catch(err => handleError(err, res));
@@ -165,11 +174,11 @@ function handlePut(req: Request, res: Response) {
 				req.body._id = id;
 			json[idx] = req.body;
 			markChanged(fname);
-			res.json({ msg: 'OK' });
+			reply(res, { msg: 'OK' });
 		}
 		else {
 			res.status(404);
-			res.json({ error: `Item ${id} not found in ${fname}` });
+			reply(res, { error: `Item ${id} not found in ${fname}` });
 		}
 	})
 	.catch(err => handleError(err, res));
@@ -185,11 +194,11 @@ function handleDelete(req: Request, res: Response) {
 		if (idx >= 0) {
 			json.splice(idx, 1);
 			markChanged(fname);
-			res.json({ msg: 'OK' });
+			reply(res, { msg: 'OK' });
 		}
 		else {
 			res.status(404);
-			res.json({ error: `Item ${id} not found in ${fname}` });
+			reply(res, { error: `Item ${id} not found in ${fname}` });
 		}
 	})
 	.catch(err => handleError(err, res));
@@ -200,15 +209,15 @@ function handleDelete(req: Request, res: Response) {
 
 function main() {
 	let app = createExpressApp();
-	let route = API_ROOT + '/:file';
+	let route = config.apiRoot + '/:file';
 	let routeWithId = route + '/:id';
 	app.get(route, handleGetAll);
 	app.get(routeWithId, handleGetOne);
 	app.post(route, handlePost);
 	app.put(routeWithId, handlePut);
 	app.delete(routeWithId, handleDelete);
-	http.createServer(app).listen(PORT);
-	console.log('API server ready on port ' + PORT);
+	setupPeriodicWrite();
+	http.createServer(app).listen(config.port);
 }
 
 main();

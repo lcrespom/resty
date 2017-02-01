@@ -16,7 +16,4 @@ Start the server with `npm start` and send HTTP requests to it. Data is stored i
 - `--data`: directory used to store JSON files. Defaults to working directory.
 - `--prefix`: API prefix. Defaults to /api.
 - `--delay`: response delay in milliseconds. Defaults to 0.
-- `--write-time`: interval between file updates in milliseconds. Defaults to 1000.
-
-## ToDo
-- Parse and use command-line parameters
+- `--write-time`: interval between file updates in milliseconds. Defaults to 1000. If set to 0, data will not be written to file.
