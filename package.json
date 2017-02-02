@@ -16,9 +16,7 @@
     "resty": "bin/resty"
   },
   "scripts": {
-    "build": "tsc",
-    "start": "node bin/resty",
-    "test": "node tests | faucet"
+    "build": "tsc"
   },
   "dependencies": {
     "body-parser": "^1.16.0",
