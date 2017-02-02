@@ -28,4 +28,4 @@ Data is stored in JSON files, one file per path. For example, all requests to `/
 - `--prefix`: API prefix. Defaults to /api.
 - `--delay`: response delay in milliseconds. Defaults to 0.
 - `--write-time`: interval between file updates in milliseconds. Defaults to 1000. If set to 0, data will not be written to file.
-- `--disable-cors`: enable/disable cors. It is enabled by default.
+- `--disable-cors`: enable/disable CORS. It is enabled by default, so that requests can be sent from pages served from any host or port.
