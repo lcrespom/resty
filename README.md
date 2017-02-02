@@ -23,7 +23,7 @@ Data is stored in JSON files, one file per path. For example, all requests to `/
 - `GET /api/route/id`: Returns a single element identified by `id`.
 
 ### Command-line parameters
-- `--port`: HTTP port to be used.
+- `--port`: HTTP port to be used. Defaults to 3000.
 - `--data`: directory used to store JSON files. Defaults to working directory.
 - `--prefix`: API prefix. Defaults to /api.
 - `--delay`: response delay in milliseconds. Defaults to 0.
