@@ -2,8 +2,8 @@
 A small, zero-config, file-based REST API database, useful for testing client applications.
 
 ## Install
-- **Global install**: `npm install resty -g` _(and prefix `sudo` if required)_
-- **Local install**: `npm install resty --save-dev`
+- **Global install**: `npm install resty-zero-config -g` _(and prefix `sudo` if required)_
+- **Local install**: `npm install resty-zero-config --save-dev`
 
 ## Usage
 If you installed it globally, just type `resty` and pass any command-line parameter (see below). If you installed it locally, type `node_modules/.bin/resty`.
