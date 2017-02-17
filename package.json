@@ -1,5 +1,5 @@
 {
-  "name": "resty",
+  "name": "resty-zero-config",
   "version": "1.0.0",
   "description": "Zero-config file-based REST API database",
   "keywords": [
