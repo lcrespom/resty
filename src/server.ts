@@ -214,6 +214,8 @@ function handleDelete(req: Request, res: Response) {
 
 function main() {
 	let app = createExpressApp();
+	if (config.webRoot)
+		app.use(express.static(config.webRoot));
 	let route = config.apiRoot + '/:file';
 	let routeWithId = route + '/:id';
 	app.get(route, handleGetAll);

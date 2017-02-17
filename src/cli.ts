@@ -11,6 +11,7 @@ export function getConfig() {
 	let config = {
 		port: argv.port || PORT,
 		dataDir: argv.data || DATA_DIR,
+		webRoot: argv.static,
 		apiRoot: argv.prefix || API_ROOT,
 		replyDelay: argv.delay || REPLY_DELAY,
 		writeDelay: argv['write-time'] || WRITE_DELAY,
@@ -29,6 +30,7 @@ function report(cfg) {
 Starting REST server:
   - Port (--port): ${cfg.port}
   - Data directory (--data): ${cfg.dataDir}
+  - Static content directory (--static): ${cfg.webRoot ? cfg.webRoot : 'disabled' }
   - API root (--prefix): ${cfg.apiRoot}
   - Reply delay (--delay): ${cfg.replyDelay} ms
   - Time between file writes (--write-time): ${cfg.writeDelay ? cfg.writeDelay + ' ms' : 'disabled'}
