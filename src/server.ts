@@ -161,7 +161,7 @@ function handlePost(req: Request, res: Response) {
 		if (!req.body._id)
 			req.body._id = uniqueId(16);
 		json.push(req.body);
-		reply(res, { msg: 'OK' });
+		reply(res, { msg: 'OK', _id: req.body._id });
 		markChanged(fname);
 	})
 	.catch(err => handleError(err, res));
