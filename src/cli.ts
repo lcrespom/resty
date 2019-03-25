@@ -14,7 +14,7 @@ export function getConfig() {
 		webRoot: argv.static,
 		apiRoot: argv.prefix || API_ROOT,
 		replyDelay: argv.delay || REPLY_DELAY,
-		writeDelay: argv['write-time'] || WRITE_DELAY,
+		writeDelay: parseInt(argv['write-time'], 10) || WRITE_DELAY,
 		cors: !argv['disable-cors']
 	};
 	if (!config.apiRoot.startsWith('/'))
@@ -33,7 +33,7 @@ Starting REST server:
   - Static content directory (--static): ${cfg.webRoot ? cfg.webRoot : 'disabled' }
   - API root (--prefix): ${cfg.apiRoot}
   - Reply delay (--delay): ${cfg.replyDelay} ms
-  - Time between file writes (--write-time): ${cfg.writeDelay ? cfg.writeDelay + ' ms' : 'disabled'}
+  - Time between file writes (--write-time): ${cfg.writeDelay > 0 ? cfg.writeDelay + ' ms' : 'disabled'}
   - CORS (--disable-cors): ${cfg.cors ? 'enabled' : 'disabled'}
 `);
 }

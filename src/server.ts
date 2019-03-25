@@ -6,6 +6,7 @@ const compression = require('compression');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 import { getConfig } from './cli';
+import { search } from './search';
 
 
 // -------------------- App setup --------------------
@@ -96,7 +97,7 @@ function markChanged(fname) {
 }
 
 function setupPeriodicWrite() {
-	if (!config.writeDelay) return;
+	if (config.writeDelay < 0) return;
 	setInterval(_ => {
 		for (let fname of Object.keys(changed))
 			fs.writeFile(config.dataDir + fname + '.json',
@@ -130,7 +131,9 @@ function handleGetAll(req: Request, res: Response) {
 	getJsonFile(req.params.file)
 	.then(json => {
 		console.log(`GET for file ${req.params.file}`);
-		reply(res, { msg: 'OK', data: json });
+		let data = json
+		if (req.query) data = search(req.query, json)
+		reply(res, { msg: 'OK', data });
 	})
 	.catch(err => handleError(err, res));
 }
