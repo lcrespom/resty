@@ -1,10 +1,10 @@
-import { argv } from 'yargs';
+import { argv } from 'yargs'
 
-const PORT = process.env.PORT || 3000;
-const DATA_DIR = './';
-const API_ROOT = '/api';
-const REPLY_DELAY = 0;
-const WRITE_DELAY = 1000;
+const PORT = process.env.PORT || 3000
+const DATA_DIR = './'
+const API_ROOT = '/api'
+const REPLY_DELAY = 0
+const WRITE_DELAY = 1000
 
 
 export function getConfig() {
@@ -16,13 +16,13 @@ export function getConfig() {
 		replyDelay: argv.delay || REPLY_DELAY,
 		writeDelay: parseInt(argv['write-time'], 10) || WRITE_DELAY,
 		cors: !argv['disable-cors']
-	};
+	}
 	if (!config.apiRoot.startsWith('/'))
-		config.apiRoot = '/' + config.apiRoot;
+		config.apiRoot = '/' + config.apiRoot
 	if (!config.dataDir.endsWith('/'))
-		config.dataDir += '/';
-	report(config);
-	return config;
+		config.dataDir += '/'
+	report(config)
+	return config
 }
 
 function report(cfg) {
@@ -35,5 +35,5 @@ Starting REST server:
   - Reply delay (--delay): ${cfg.replyDelay} ms
   - Time between file writes (--write-time): ${cfg.writeDelay > 0 ? cfg.writeDelay + ' ms' : 'disabled'}
   - CORS (--disable-cors): ${cfg.cors ? 'enabled' : 'disabled'}
-`);
+`)
 }
