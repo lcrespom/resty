@@ -101,7 +101,7 @@ function setupPeriodicWrite() {
 	setInterval(_ => {
 		for (let fname of Object.keys(changed))
 			fs.writeFile(config.dataDir + fname + '.json',
-				JSON.stringify(files[fname], null, 2))
+				JSON.stringify(files[fname], null, 2), () => 0)
 		changed = {}
 	}, config.writeDelay)
 }
