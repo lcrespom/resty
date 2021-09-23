@@ -99,9 +99,13 @@ function markChanged(fname: string) {
 function setupPeriodicWrite() {
 	if (config.writeDelay < 0) return
 	setInterval(_ => {
-		for (let fname of Object.keys(changed))
-			fs.writeFile(config.dataDir + fname + '.json',
-				JSON.stringify(files[fname], null, 2), () => 0)
+		for (let fname of Object.keys(changed)) {
+			fs.writeFile(
+				config.dataDir + fname + '.json',
+				JSON.stringify(files[fname], null, 2),
+				(err: Error) => console.dir(err)
+			)
+		}
 		changed = {}
 	}, config.writeDelay)
 }
