@@ -1,14 +1,36 @@
-import { argv } from 'yargs'
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
 
-const PORT = process.env.PORT || 3000
+type Config = {
+	port: number
+	dataDir: string
+	webRoot: string
+	apiRoot: string
+	replyDelay: number
+	writeDelay: number
+	cors: boolean
+}
+
+type ArgvConfig = {
+	port: number
+	data: string
+	static: string
+	prefix: string
+	delay: number
+	'write-time': string
+	'disable-cors': boolean
+}
+
+const PORT = process.env.PORT ? +process.env.PORT : 3000
 const DATA_DIR = './'
 const API_ROOT = '/api'
 const REPLY_DELAY = 0
 const WRITE_DELAY = 1000
 
+const argv = yargs(hideBin(process.argv)).argv as unknown as ArgvConfig
 
 export function getConfig() {
-	let config = {
+	let config: Config = {
 		port: argv.port || PORT,
 		dataDir: argv.data || DATA_DIR,
 		webRoot: argv.static,
@@ -25,7 +47,7 @@ export function getConfig() {
 	return config
 }
 
-function report(cfg) {
+function report(cfg: Config) {
 	console.log(`
 Starting REST server:
   - Port (--port): ${cfg.port}

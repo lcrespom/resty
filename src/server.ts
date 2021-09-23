@@ -40,11 +40,11 @@ function setupCORS(app: Application) {
 
 // -------------------- File handling --------------------
 
-let files = {}
-let reading = {}
-let changed = {}
+let files: Record<string, any> = {}
+let reading: Record<string, any>  = {}
+let changed: Record<string, boolean>  = {}
 
-function handleFileRead(fname, success, fail, err, data) {
+function handleFileRead(fname: string, success: any, fail: any, err: any, data: any) {
 	let json: any = null
 	let cberr: any = null
 	if (err) {
@@ -60,7 +60,7 @@ function handleFileRead(fname, success, fail, err, data) {
 			files[fname] = json
 			// Return JSON object to caller
 			success(json)
-		} catch (jpe) {
+		} catch (jpe: any) {
 			cberr = { code: 500, msg: 'Error during JSON parse: ' + jpe.toString() }
 			fail(cberr)
 		}
@@ -71,7 +71,7 @@ function handleFileRead(fname, success, fail, err, data) {
 	reading[fname] = undefined
 }
 
-function getJsonFile(fname) {
+function getJsonFile(fname: string) {
 	return new Promise<any[]>((success, fail) => {
 		if (!fname.match(/^[a-zA-Z0-9\.-_]+$/))
 			// Fail at invalid file name
@@ -82,17 +82,17 @@ function getJsonFile(fname) {
 		if (reading[fname] !== undefined)
 			// File is being read: subscribe to being called when available
 			return reading[fname].push(
-				(err, data) => err ? fail(err) : success(data)
+				(err: any, data: any) => err ? fail(err) : success(data)
 			)
 		// Read the file
 		reading[fname] = []
-		fs.readFile(config.dataDir + fname + '.json', 'utf8', (err, data) => {
+		fs.readFile(config.dataDir + fname + '.json', 'utf8', (err: any, data: any) => {
 			handleFileRead(fname, success, fail, err, data)
 		})
 	})
 }
 
-function markChanged(fname) {
+function markChanged(fname: string) {
 	changed[fname] = true
 }
 
@@ -109,7 +109,7 @@ function setupPeriodicWrite() {
 
 // -------------------- Request handlng --------------------
 
-function uniqueId(len) {
+function uniqueId(len: number) {
 	return Math.random().toString(36).substr(2, len)
 }
 
@@ -121,7 +121,7 @@ function reply(res: Response, obj: any) {
 		sendReply()
 }
 
-function handleError(err, res) {
+function handleError(err: any, res: Response) {
 	console.log('Error:', err.msg)
 	res.status(err.code)
 	reply(res, { error: err })
